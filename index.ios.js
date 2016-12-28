@@ -12,11 +12,13 @@ import {
 import TouchID from 'react-native-touch-id';
 
 var QRCodeScreen = require('./QRCodeScreen');
+var nav;
 
 export default class ReactNativePOC extends Component {
   _renderScene(route, navigator) {
+      nav = navigator;
       if (route.id === 0) {
-          return <Index navigator={navigator}/>
+          return <Index/>
       } else if (route.id === 1) {
           return <QRCodeScreen/>
       }
@@ -32,23 +34,23 @@ export default class ReactNativePOC extends Component {
 }
 
 class Index extends Component {
+    constructor (props) {
+        super(props);
+    }
     _login() {
-        //TouchID.authenticate('to demo this react-native component')
-        //    .then(success => {
-        AlertIOS.alert(props);
-        /*
-        this.props.navigator.push({
+        TouchID.authenticate('to demo this react-native component')
+            .then(success => {
+                  nav.push({
                        title: 'QRCode',
                        scene: 1,
                        passProps: {
                        onSucess: scanResult,
                        }
-                       });
-         */
-        //        })
-        //        .catch(error => {
-        ///           AlertIOS.alert('Authentication Failed');
-        //       });
+                  });
+                })
+                .catch(error => {
+                   AlertIOS.alert('Authentication Failed');
+               });
   }
   render() {
     return (
@@ -56,7 +58,7 @@ class Index extends Component {
         <Text style={styles.welcome}>
           Welcome to React Native POC!
         </Text>
-        <Button onPress={this._login} title='Login'/>
+            <Button onPress={this._login} navigator={this.props.navigator} title='Login'/>
       </View>
     );
   }
