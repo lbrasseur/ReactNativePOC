@@ -7,20 +7,20 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Navigator
+  Navigator,
+  Dimensions
 } from 'react-native';
 import TouchID from 'react-native-touch-id';
+import Camera from 'react-native-camera';
 
 var QRCodeScreen = require('./QRCodeScreen');
-var nav;
 
 export default class ReactNativePOC extends Component {
   _renderScene(route, navigator) {
-      nav = navigator;
       if (route.id === 0) {
-          return <Index/>
-      } else if (route.id === 1) {
-          return <QRCodeScreen/>
+          return <Index navigator={navigator}/>
+      } else {
+          return <QRCodeScreen navigator={navigator} onSucess={scanResult}/>
       }
   }
   render() {
@@ -33,26 +33,24 @@ export default class ReactNativePOC extends Component {
   }
 }
 
-class Index extends Component {
-    constructor (props) {
-        super(props);
-    }
-    _login() {
+var Index  = React.createClass( {
+    _login: function()  {
+        var $this = this;
         TouchID.authenticate('to demo this react-native component')
             .then(success => {
-                  nav.push({
+                  $this.props.navigator.push({
                        title: 'QRCode',
                        scene: 1,
                        passProps: {
-                       onSucess: scanResult,
+                        onSucess: scanResult,
                        }
                   });
                 })
                 .catch(error => {
                    AlertIOS.alert('Authentication Failed');
                });
-  }
-  render() {
+  },
+  render: function()  {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
@@ -62,7 +60,8 @@ class Index extends Component {
       </View>
     );
   }
-}
+});
+
 
 const styles = StyleSheet.create({
   container: {
@@ -80,6 +79,21 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  preview: {
+                                 flex: 1,
+                                 justifyContent: 'flex-end',
+                                 alignItems: 'center',
+                                 height: Dimensions.get('window').height,
+                                 width: Dimensions.get('window').width
+  },
+  capture: {
+                                 flex: 0,
+                                 backgroundColor: '#fff',
+                                 borderRadius: 5,
+                                 color: '#000',
+                                 padding: 10,
+                                 margin: 40
   }
 });
 
